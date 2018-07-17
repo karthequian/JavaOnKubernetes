@@ -47,11 +47,3 @@ More info here: `https://prometheus.io/docs/prometheus/latest/querying/operators
 The node exporter gives you node relative information as well like CPU/disk usage etc.
 
 Run `count(node_cpu{mode="system", instance="192.168.99.100:9100"})` will return the cpu count which should match the number of CPU's in `kubectl describe nodes`
-
-### Step 6: App metrics
-
-1. Run the app: `kubectl apply -f twelve-clouds.yaml`
-2. Visit the app after it's deployed: `minikube service twelve-clouds-service`
-3. You'll see the  `/metrics` endpoint with go stats
-4. Visit the `/hello` endpoint 2 times.
-5. You'll see a new "hello_calls" metric in the dashboard
