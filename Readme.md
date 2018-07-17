@@ -12,7 +12,7 @@ I've already published this container to `https://hub.docker.com/r/karthequian/j
 
 Easily deploy the deployment and service with `kubectl apply -f deployment.yaml`
 
-# Ingress: Let's add an ingress controller
+## Ingress: Let's add an ingress controller
 We will use Heptio's contour with envoy as our ingress controller: `kubectl apply -f https://j.hept.io/contour-deployment-rbac`. You can also build your own if necessary.
 
 Look at the data: `kubectl get all -n heptio-contour`
