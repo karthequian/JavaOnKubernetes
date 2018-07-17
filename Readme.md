@@ -17,12 +17,12 @@ We will use Heptio's contour with envoy as our ingress controller: `kubectl appl
 
 Look at the data: `kubectl get all -n heptio-contour`
 
-Run our ingress yaml: `kubectl apply -f ingress.yaml`
+Run our ingress yaml: `kubectl apply -f wishlist-contour.yaml`
 
 Take a look at the url: `<EXTERNAL-IP>/products`
 
-
 # Prometheus section:
+
 ## Step 1: Deploy
 Helm is the easiest way to do this. Check out `https://github.com/kubernetes/charts/tree/master/stable/prometheus`.
 

@@ -1,0 +1,85 @@
+# Wishlist deployment yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: wishlist-deployment
+  labels:
+    app: wishlist
+spec:
+  replicas: 3 #We always want more than 1 replica for HA
+  selector:
+    matchLabels:
+      app: wishlist
+  template:
+    metadata:
+      labels:
+        app: wishlist
+    spec:
+      containers:
+      - name: wishlist #1st container
+        image: karthequian/wishlist:1.0 #Dockerhub image
+        ports:
+        - containerPort: 8080 #Exposes the port 8080 of the container
+        env:
+        - name: PORT #Env variable key passed to container that is read by app
+          value: "8080" # Value of the env port.
+      - name: catalog #2nd container
+        image: karthequian/wishlist-catalog:1.0
+        ports:
+        - containerPort: 8081
+        env:
+        - name: PORT
+          value: "8081"
+      - name: auth #3rd container
+        image: karthequian/wishlist-auth:1.0
+        ports:
+        - containerPort: 8082
+        env:
+        - name: PORT
+          value: "8082"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: wishlist-service
+  labels:
+    app: wishlist-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: wishlist
+  ports:
+  - name: wishlist-port
+    protocol: TCP
+    port: 8080
+  - name: wishlist-auth-port
+    protocol: TCP
+    port: 8082
+  - name: wishlist-catalog-port
+    protocol: TCP
+    port: 8081
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wishlist-service
+  labels:
+    app: wishlist-service
+spec:
+  rules:
+  - host:
+    http:
+      paths:
+      - path: /wishlist
+        backend:
+          serviceName: wishlist-service
+          servicePort: 8080
+      - path: /products
+        backend:
+          serviceName: wishlist-service
+          servicePort: 8081
+      - path: /login
+        backend:
+          serviceName: wishlist-service
+          servicePort: 8082
