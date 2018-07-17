@@ -1,0 +1,57 @@
+# Deployment yaml
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: javademo-deployment
+  labels:
+    app: javademo
+spec:
+  replicas: 3 #We always want more than 1 replica for HA
+  selector:
+    matchLabels:
+      app: javademo
+  template:
+    metadata:
+      labels:
+        app: javademo
+    spec:
+      containers:
+      - name: javademo #1st container
+        image: karthequian/javademo:latest #Dockerhub image
+        ports:
+        - containerPort: 8181 #Exposes the port 8080 of the container
+        env:
+        - name: PORT #Env variable key passed to container that is read by app
+          value: "8181" # Value of the env port.
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: javademo-service
+  labels:
+    app: javademo-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: javademo
+  ports:
+  - name: javademo-port
+    protocol: TCP
+    port: 8181
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: javademo-service
+  labels:
+    app: javademo-service
+spec:
+  rules:
+  - host:
+    http:
+      paths:
+      - path: /javademo
+        backend:
+          serviceName: javademo-service
+          servicePort: 8181
